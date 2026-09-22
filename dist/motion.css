@@ -1,0 +1,195 @@
+/* 움직임 레이어 — 발표 중 화면이 멈춰 보이지 않게 합니다.
+   prefers-reduced-motion에서는 styles.css의 !important 규칙이 아래를 전부 끕니다.
+   원칙: 등장 애니메이션은 요소 자신에게, 계속 도는 애니메이션은 자식이나 의사요소에.
+   (한 요소에 animation을 두 번 선언해 서로 지우지 않도록) */
+
+/* ── 키프레임 ── */
+@keyframes m-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes m-fade{from{opacity:0}to{opacity:1}}
+@keyframes m-next{from{opacity:0;transform:translate(24px,8px)}to{opacity:1;transform:none}}
+@keyframes m-prev{from{opacity:0;transform:translate(-24px,8px)}to{opacity:1;transform:none}}
+@keyframes m-pop{0%{opacity:0;transform:scale(.78)}62%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:none}}
+@keyframes m-spin{to{transform:rotate(360deg)}}
+@keyframes m-halo{0%{opacity:.55;transform:scale(1)}100%{opacity:0;transform:scale(1.45)}}
+@keyframes m-sweep{0%{transform:translateX(-110%)}60%,100%{transform:translateX(320%)}}
+@keyframes m-blink{0%,45%{opacity:1}55%,95%{opacity:.15}100%{opacity:1}}
+@keyframes m-type{from{max-width:0}to{max-width:100%}}
+@keyframes m-scan{from{left:-20%}to{left:100%}}
+@keyframes m-nudge{0%,100%{opacity:.3;transform:translateX(-3px)}50%{opacity:1;transform:translateX(3px)}}
+@keyframes m-barY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes m-float{0%,100%{transform:scale(1.07) translateY(0)}50%{transform:scale(1.07) translateY(-7px)}}
+@keyframes m-breathe{0%,100%{opacity:.5;transform:scale(.88)}50%{opacity:1;transform:scale(1.12)}}
+@keyframes m-shimmer{to{background-position:220% center}}
+@keyframes m-shoot{0%{opacity:0;transform:translate(0,0) rotate(19deg) scaleX(.12)}5%{opacity:.9}20%{opacity:0;transform:translate(330px,114px) rotate(19deg) scaleX(1)}100%{opacity:0;transform:translate(330px,114px) rotate(19deg) scaleX(1)}}
+@keyframes m-travel{from{left:-35%}to{left:105%}}
+@keyframes m-zoom{from{transform:scale(1)}to{transform:scale(1.08)}}
+@keyframes m-toast{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translateX(-50%)}}
+@keyframes m-modal{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes m-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@keyframes m-nebula{from{opacity:.45}to{opacity:1}}
+@keyframes m-ovf{0%,100%{transform:translateX(0)}50%{transform:translateX(7px)}}
+@keyframes m-mark{0%,100%{background:transparent}50%{background:#dde9f9}}
+@keyframes m-flag{0%,100%{background:#fdf5f2;border-color:#dda694}50%{background:#fae6de;border-color:#c98c77}}
+@keyframes m-twirl{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.22) rotate(180deg)}}
+@keyframes m-count{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* ── 스크롤 진입 ── */
+body.motion .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,.7,.3,1),transform .7s cubic-bezier(.22,.7,.3,1);transition-delay:calc(var(--d,0)*70ms)}
+body.motion .reveal.in{opacity:1;transform:none}
+
+/* ── 스크롤 진행 막대 ── */
+#scroll-progress{position:fixed;top:76px;left:0;right:0;height:2px;z-index:19;pointer-events:none;transform:scaleX(var(--p,0));transform-origin:0 50%;background:linear-gradient(90deg,#7f8cff,#c3b9ec 45%,#8fd2ff);box-shadow:0 0 12px #9aa6ff70}
+.presenting #scroll-progress{top:62px}
+
+/* ── 히어로 ── */
+.hero-content>.eyebrow{animation:m-rise .9s .1s backwards}
+.hero h1{animation:m-rise 1.1s .28s backwards}
+.hero-copy{animation:m-rise 1s .52s backwards}
+.hero-cta{animation:m-rise 1s .72s backwards}
+.hero-topline,.hero-bottom{animation:m-fade 1.4s .9s backwards}
+.hero h1 em{background-size:220% 100%;animation:m-shimmer 9s linear infinite}
+.play-circle{position:relative}
+.play-circle:after{content:'';position:absolute;inset:-1px;border-radius:50%;border:1px solid #d9e5f1;animation:m-halo 2.8s ease-out infinite}
+.hero-bottom a span{display:inline-block;animation:m-bob 2s ease-in-out infinite}
+.shoot{position:absolute;left:var(--x);top:var(--y);width:104px;height:1px;opacity:0;transform-origin:0 50%;background:linear-gradient(90deg,transparent,#e9efff,transparent);animation:m-shoot 12s var(--delay) linear infinite}
+.hero{overflow:hidden}
+.starfield{transition:transform .1s linear}
+.starfield.local{inset:0;z-index:-1}
+.journey,.results{isolation:isolate}
+.journey:before{animation:m-nebula 13s ease-in-out infinite alternate}
+.presenting .star{animation-play-state:running;opacity:.7}
+
+/* ── 헤더 ── */
+.brand{transition:transform .45s}
+.brand:hover{transform:rotate(-2deg)}
+.header nav a:after{content:'';position:absolute;left:0;right:100%;bottom:calc(50% - 14px);height:1px;background:#b8d3ff;opacity:.85;transition:right .35s cubic-bezier(.22,.7,.3,1)}
+.header nav a:hover:after,.header nav a.active:after{right:0}
+.header nav a.active:before{animation:m-breathe 2.6s ease-in-out infinite}
+.icon-button,.present-button{transition:transform .2s,border-color .3s}
+.icon-button:hover{transform:translateY(-2px)}
+.present-button:hover{transform:translateY(-1px);border-color:#c6d8ff}
+
+/* ── 검증 배경 카드 ── */
+.context-card{animation:m-fade .5s backwards;transition:box-shadow .4s}
+.context-card:nth-child(2){animation-delay:.06s}
+.context-card:nth-child(3){animation-delay:.12s}
+.context-card.active{animation:m-fade .5s backwards,m-float 6.5s .5s ease-in-out infinite}
+.context-card.active .card-image{animation:m-zoom 11s ease-in-out infinite alternate}
+.context-card .card-number{transition:opacity .4s}
+.context-description .swap{display:inline-block;animation:m-rise .5s backwards}
+#context-prev:hover{transform:translateX(-4px)}
+#context-next:hover{transform:translateX(4px)}
+.arrow-button{transition:transform .25s}
+.journey-flow span:before{display:inline-block;animation:m-breathe 3s ease-in-out infinite}
+.journey-flow span:nth-of-type(2):before{animation-delay:.4s}
+.journey-flow span:nth-of-type(3):before{animation-delay:.8s}
+.journey-flow span:nth-of-type(4):before{animation-delay:1.2s}
+.journey-flow i{position:relative;overflow:hidden}
+.journey-flow i:after{content:'';position:absolute;top:0;bottom:0;width:30%;background:#dce7ff;animation:m-travel 2.4s linear infinite}
+.journey-flow i:nth-of-type(2):after{animation-delay:.4s}
+.journey-flow i:nth-of-type(3):after{animation-delay:.8s}
+
+/* ── 시나리오 정보 ── */
+.scenario-info .swap{display:inline-block;animation:m-rise .5s backwards}
+.scenario-description .swap{animation-delay:.08s}
+.scenario-tab{transition:background .3s,color .3s,border-color .3s,transform .2s}
+.scenario-tab:hover{transform:translateY(-2px)}
+.step-progress span{position:relative;overflow:hidden;transition:background .35s}
+.step-progress span.current:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,#ffffffb0,transparent);animation:m-sweep 1.9s ease-in-out infinite}
+.step-copy h4{animation:m-rise .5s .04s backwards}
+.step-copy>p{animation:m-rise .5s .13s backwards}
+.assertion{position:relative;animation:m-rise .5s .22s backwards}
+.assertion:before{content:'';position:absolute;left:-2px;top:0;width:2px;height:100%;background:#2b568f;transform-origin:50% 0;animation:m-barY .55s .24s backwards}
+.ai-scenario .assertion:before{background:#5a4b9a}
+.primary-button,.secondary-button{position:relative;overflow:hidden;transition:transform .18s,box-shadow .28s}
+.primary-button:hover:not(:disabled),.secondary-button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 24px #1c243a2e}
+.primary-button:active:not(:disabled),.secondary-button:active:not(:disabled){transform:translateY(0)}
+.primary-button:after{content:'';position:absolute;top:0;bottom:0;left:0;width:45%;background:linear-gradient(90deg,transparent,#ffffff2b,transparent);transform:translateX(-160%);transition:transform .65s}
+.primary-button:hover:not(:disabled):after{transform:translateX(330%)}
+.evidence-link span,.text-button{transition:transform .25s}
+.evidence-link:hover span{transform:translate(4px,-4px)}
+
+/* ── 재현 화면 전환 ── */
+.sim-body>*{animation:m-next .5s cubic-bezier(.22,.72,.28,1) backwards}
+.simulation[data-dir=prev] .sim-body>*{animation-name:m-prev}
+.sim-body>*:nth-child(2){animation-delay:.08s}
+.sim-body>*:nth-child(3){animation-delay:.16s}
+.sim-body>*:nth-child(n+4){animation-delay:.24s}
+
+/* ── 재현 화면 안의 움직임 ── */
+.win-bar i:nth-child(3){animation:m-breathe 2.4s ease-in-out infinite}
+.clock{position:relative;overflow:hidden}
+.clock:after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,#8fa9d6,#c9d9f1);transform-origin:0 50%;animation:m-count 4.5s linear infinite}
+.clock strong{animation:m-pop .6s .12s backwards}
+.log{animation:m-rise .45s calc(var(--d,0)*110ms + 120ms) backwards}
+.log.run:before{animation:m-breathe 1.2s ease-in-out infinite}
+.log.run:after{content:'';width:6px;height:11px;margin-left:-5px;align-self:center;background:#79a6e8;animation:m-blink 1.1s steps(1,end) infinite}
+.log.wait:before,.log.pend:before{animation:m-blink 2.4s ease-in-out infinite}
+.suite-item{animation:m-rise .45s calc(var(--d,0)*95ms + 100ms) backwards}
+.suite-item.run{position:relative;overflow:hidden}
+.suite-item.run i{display:inline-block;animation:m-spin 1.4s linear infinite}
+.suite-item.run:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,#cadff8a0,transparent);animation:m-sweep 2.3s .4s ease-in-out infinite;pointer-events:none}
+.suite-item.fail i{display:inline-block;animation:m-pop .55s .35s backwards}
+.ticket-summary{animation:m-rise .45s calc(var(--d,0)*90ms + 140ms) backwards}
+.field.filled span{display:inline-block;overflow:hidden;white-space:nowrap;max-width:100%;vertical-align:bottom;animation:m-type .95s .2s steps(16,end) backwards}
+.field.filled:nth-of-type(2) span{animation-delay:.9s}
+.highlight{position:relative}
+.highlight:after{content:'';position:absolute;inset:-5px;border:1px solid #6f9cdb;border-radius:5px;pointer-events:none;animation:m-halo 2.5s ease-out infinite}
+.sim-notice.error.highlight:after{border-color:#c98470}
+.mail-card p b{border-radius:2px;animation:m-mark 2.2s .8s ease-in-out infinite}
+.code i{animation:m-pop .4s backwards}
+.code.filled i:nth-child(1){animation-delay:.3s}
+.code.filled i:nth-child(2){animation-delay:.42s}
+.code.filled i:nth-child(3){animation-delay:.54s}
+.code.filled i:nth-child(4){animation-delay:.66s}
+.code.filled i:nth-child(5){animation-delay:.78s}
+.code.filled i:nth-child(6){animation-delay:.9s}
+.code:not(.filled) i:first-child{animation:m-blink 1.1s steps(1,end) infinite}
+.flow .node{animation:m-pop .5s backwards}
+.flow .node:nth-child(3){animation-delay:.28s}
+.flow .node:nth-child(5){animation-delay:.56s}
+.flow i{animation:m-nudge 1.6s ease-in-out infinite}
+.flow i:nth-child(4){animation-delay:.34s}
+.split.scanning{position:relative;overflow:hidden}
+.split.scanning:after{content:'';position:absolute;top:0;bottom:0;width:20%;background:linear-gradient(90deg,transparent,#b3a6e655,transparent);animation:m-scan 2.6s ease-in-out infinite;pointer-events:none}
+.pane.flag{animation:m-flag 2.4s ease-in-out infinite}
+.mock.broken p.ovf{animation:m-ovf 2.4s .6s ease-in-out infinite}
+.checkmark{position:relative;animation:m-pop .6s .15s backwards}
+.checkmark:after{content:'';position:absolute;inset:-7px;border:1px solid #8fa8c9;border-radius:50%;animation:m-halo 2.8s ease-out infinite}
+.doc p{animation:m-rise .5s .25s backwards}
+
+/* ── 검증 범위 ── */
+.result-intro strong{display:inline-block}
+.result-row{position:relative;transition:background .3s}
+.result-row:before{content:'';position:absolute;left:-16px;top:18%;bottom:18%;width:2px;background:#9aa6ff;transform:scaleY(0);transform-origin:50% 50%;transition:transform .35s}
+.result-row:hover:before{transform:scaleY(1)}
+.result-row .result-num,.result-row>span:last-child{transition:transform .3s,color .3s,opacity .3s}
+.result-row>span:last-child{opacity:.55}
+.result-row:hover .result-num{color:#c3b9ec}
+.result-row:hover>span:last-child{transform:translate(5px,-5px);opacity:1}
+.status{transition:border-color .3s,color .3s}
+.result-row:hover .status{border-color:#9d97c9}
+
+/* ── 발표 자료 ── */
+.resource-card{transition:transform .38s cubic-bezier(.22,.7,.3,1)}
+.resource-card:hover{transform:translateY(-7px)}
+.resource-art{transition:transform .7s cubic-bezier(.22,.7,.3,1)}
+.resource-card:hover .resource-art{transform:scale(1.07)}
+.resource-card h3 span{display:inline-block;transition:transform .3s}
+.resource-card:hover h3 span{transform:translate(4px,-4px)}
+.closing>span{display:inline-block;animation:m-twirl 5s ease-in-out infinite}
+
+/* ── 모달 · 토스트 · 발표 바 ── */
+dialog[open]{animation:m-modal .35s cubic-bezier(.22,.8,.3,1)}
+dialog::backdrop{animation:m-fade .3s}
+.toast:not([hidden]){animation:m-toast .4s cubic-bezier(.22,.8,.3,1)}
+.presentation-bar:not([hidden]){animation:m-toast .4s cubic-bezier(.22,.8,.3,1)}
+.presentation-bar button{transition:transform .2s,opacity .25s;border-radius:20px}
+.presentation-bar button:hover:not(:disabled){transform:translateY(-2px)}
+
+@media(max-width:760px){
+#scroll-progress{top:68px}
+.context-card.active{animation:m-fade .5s backwards}
+.shoot{display:none}
+.result-row:before{left:-8px}
+}

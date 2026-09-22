@@ -97,6 +97,26 @@ test('evidence modals stay honest about what has not run and the modal blocks pr
  assert.equal(notes.length,10);
 });
 
+test('step changes carry a direction and a stagger order for the motion layer',()=>{
+ const f=fixture();
+ // 진입 방향: 다음 단계는 next, 이전 단계와 초기화는 prev
+ assert.equal(f.el('#cur-simulation').dataset.dir,'next');
+ f.el('#cur-step-next').onclick();assert.equal(f.el('#cur-simulation').dataset.dir,'next');
+ f.el('#cur-step-prev').onclick();assert.equal(f.el('#cur-simulation').dataset.dir,'prev');
+ f.el('#cur-step-next').onclick();f.el('#cur-reset').onclick();
+ assert.equal(f.el('#cur-simulation').dataset.dir,'prev');
+ f.select('cur-',1);assert.equal(f.el('#cur-simulation').dataset.dir,'next');
+ // 로그·체크리스트·요약행은 순서대로 등장하도록 자기 번호를 들고 있어야 한다
+ f.select('cur-',0);f.el('#cur-step-next').onclick();
+ const launch=f.el('#cur-simulation').innerHTML;
+ assert.match(launch,/class="log done" style="--d:0"/);
+ assert.match(launch,/class="log wait" style="--d:3"/);
+ f.select('ai-',2);
+ assert.match(f.el('#ai-simulation').innerHTML,/class="ticket-summary " style="--d:1"/);
+ // 제목은 시나리오가 바뀔 때만 다시 올라온다
+ assert.equal(f.el('#ai-scenario-title').innerHTML,`<span class="swap">${aiScenarios[2].title}</span>`);
+});
+
 test('presentation toggles and keyboard chapter navigation cover all six scenes',()=>{
  const f=fixture();f.el('#present').onclick();assert.equal(f.el('#presentation-bar').hidden,false);assert.ok(f.classes.has('presenting'));
  assert.equal(f.el('#chapter-count').textContent,'01 / 06');

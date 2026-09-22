@@ -22,7 +22,15 @@
 
 Use case: stylized-concept. Asset type: full-bleed website hero background, wide 16:9 landscape, preferably 2048x1152. One cinematic sparkling galaxy background with a premium celestial dreamlike feeling. Vast indigo night sky with delicate luminous lilac and cyan nebula flowing diagonally from lower center toward upper right, dense tiny pinprick stars, several elegant bright four-point stars, ethereal fine cosmic dust. Photographic fantasy astronomy, richly detailed yet sophisticated. Deep near-black blue negative space in the left 45 percent for a large white serif title added later; luminous nebula mostly on the right. Luminous, serene, ethereal, visibly sparkling but restrained. Deep midnight indigo, violet, lilac, icy blue and cyan. No foreground planets, people, text, logos, UI, border or watermark.
 
-실제 생성 크기: 1672×941. 사이트에서 48개의 작은 별 점을 CSS로 겹쳐 은은하게 반짝이도록 했습니다. reduced-motion과 발표 모드에서는 움직임을 중지합니다.
+실제 생성 크기: 1672×941. 사이트에서 48개의 작은 별 점을 CSS로 겹쳐 은은하게 반짝이도록 했고, 검증 배경·검증 범위 섹션에도 26개씩 더 깔았습니다. 히어로의 별밭은 스크롤에 따라 본문보다 느리게 따라옵니다.
+
+## 움직임
+
+발표 중 화면이 정지 화면처럼 보인다는 요청에 따라 `dist/motion.css`에 움직임 레이어를 더했습니다. 히어로 진입, 스크롤에 맞춘 섹션 등장, 헤더 아래 진행 막대, 단계 전환(진행 방향에 따라 좌우에서 들어옴), 재현 화면 내부의 실행 표현(로그 순차 등장과 커서, 도는 실행 아이콘, 흐르는 강조광, 타이핑되는 로그인 입력, 하나씩 채워지는 인증 코드, 훑고 지나가는 비교 스캔, 숨 쉬는 강조 테두리), 검증 범위 숫자 카운트업, 카드·버튼·행의 호버 반응입니다.
+
+규칙 두 가지를 지켰습니다. 한 요소에 `animation`을 두 번 선언하지 않고 계속 도는 움직임은 자식이나 의사요소에 둡니다. 그리고 초기 상태를 base 선언이 아니라 키프레임의 `from`에 두어, `prefers-reduced-motion`에서 `animation:none`이 걸려도 내용이 보이지 않게 되는 일이 없게 했습니다. 스크롤 진입 효과만 JS로 `body.motion`을 붙여 제어하며, reduced-motion이거나 `IntersectionObserver`가 없으면 아예 붙이지 않습니다.
+
+발표 모드에서는 이전과 달리 별빛을 멈추지 않습니다. reduced-motion에서만 전부 정지합니다.
 
 ## 콘솔 재현 화면
 

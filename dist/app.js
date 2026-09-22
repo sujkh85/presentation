@@ -6,13 +6,15 @@ const names=['소개','검증 배경','현재 E2E','AI-assisted','검증 범위'
 const LAST=5;
 let contextIndex=1,chapter=0,presenting=false,lastFocus=null,toastTimer;
 const pad=n=>String(n).padStart(2,'0');
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MOTION=!REDUCED&&typeof IntersectionObserver==='function';
 
 // ---------- 재현 화면 부품 ----------
 const win=(url,badge,body)=>`<div class="win"><div class="win-bar"><i></i><i></i><i></i><span>${url}</span>${badge?`<b>${badge}</b>`:''}</div><div class="win-body">${body}</div></div>`;
-const logs=a=>`<div class="logs">${a.map(([s,t])=>`<p class="log ${s}">${t}</p>`).join('')}</div>`;
+const logs=a=>`<div class="logs">${a.map(([s,t],i)=>`<p class="log ${s}" style="--d:${i}">${t}</p>`).join('')}</div>`;
 const clock=(t,sub,tag)=>`<div class="clock"><small>${tag}</small><strong>${t}</strong><span>${sub}</span></div>`;
-const rows=a=>a.map(([k,v,c])=>`<div class="ticket-summary ${c||''}"><span>${k}</span><strong>${v}</strong></div>`).join('');
-const suite=a=>`<div class="suite">${a.map(([s,t])=>`<p class="suite-item ${s}"><i>${s==='done'?'✓':s==='run'?'◐':s==='fail'?'✕':'·'}</i>${t}</p>`).join('')}</div>`;
+const rows=a=>a.map(([k,v,c],i)=>`<div class="ticket-summary ${c||''}" style="--d:${i}"><span>${k}</span><strong>${v}</strong></div>`).join('');
+const suite=a=>`<div class="suite">${a.map(([s,t],i)=>`<p class="suite-item ${s}" style="--d:${i}"><i>${s==='done'?'✓':s==='run'?'◐':s==='fail'?'✕':'·'}</i>${t}</p>`).join('')}</div>`;
 const login=(o={})=>`<div class="login-box"><div class="field ${o.fill?'filled':''}"><small>ID</small><span>${o.id||'qa-bot@test'}</span></div><div class="field ${o.fill?'filled':''}"><small>PASSWORD</small><span>••••••••••</span></div>${o.extra||''}<div class="sim-action ${o.state||''}">${o.button||'로그인'}</div></div>`;
 const mail=(o)=>`<div class="mail-card ${o.cls||''}"><div class="mail-top"><span>${o.from}</span><b>${o.time}</b></div><strong>${o.subject}</strong><p>${o.body}</p></div>`;
 const pane=(t,body,cls)=>`<div class="pane ${cls||''}"><small>${t}</small>${body}</div>`;
@@ -54,22 +56,26 @@ const SCREENS={
 // ---------- 단계 플레이어 ----------
 function createPlayer(p,data,brand){
  const el=k=>$('#'+p+k);
- let selected=0,step=0;
+ let selected=0,step=0,mounted=-1,dir='next';
  function render(){
   const s=data[selected],st=s.steps[step];
-  el('scenario-category').textContent=s.category;
-  el('scenario-title').textContent=s.title;
-  el('scenario-description').textContent=s.description;
-  el('scenario-tabs').innerHTML=data.map((d,i)=>`<button class="scenario-tab" data-scenario="${i}" aria-pressed="${i===selected}"><span>${pad(i+1)}</span>${d.label}</button>`).join('');
+  if(mounted!==selected){ // 시나리오가 바뀔 때만 교체해 단계 이동마다 제목이 다시 뜨지 않게 한다
+   mounted=selected;
+   el('scenario-category').textContent=s.category;
+   el('scenario-title').innerHTML=`<span class="swap">${escape(s.title)}</span>`;
+   el('scenario-description').innerHTML=`<span class="swap">${escape(s.description)}</span>`;
+   el('scenario-tabs').innerHTML=data.map((d,i)=>`<button class="scenario-tab" data-scenario="${i}" aria-pressed="${i===selected}"><span>${pad(i+1)}</span>${d.label}</button>`).join('');
+  }
   el('step-count').textContent=`STEP ${pad(step+1)} / ${pad(s.steps.length)}`;
   el('step-progress').innerHTML=s.steps.map((_,i)=>`<span class="${i===step?'current':i<step?'done':''}"></span>`).join('');
   el('step-copy').innerHTML=`<h4>${st.title}</h4><p>${st.action}<br>${st.expected}</p><div class="assertion"><span>이 단계에서 확인할 내용</span>${st.assertion}</div>`;
   el('step-prev').disabled=step===0;
   el('step-next').disabled=step===s.steps.length-1;
   el('step-next').textContent=step===s.steps.length-1?'마지막 단계':'다음 단계 →';
+  el('simulation').dataset.dir=dir;
   el('simulation').innerHTML=`<div class="sim-header"><strong>${brand}</strong><span>${s.label}</span></div><div class="sim-body" data-screen="${st.screen}">${(SCREENS[st.screen]||(()=>''))()}</div>`;
  }
- const api={render,select(i){selected=i;step=0;render();},advance(n){step=Math.max(0,Math.min(data[selected].steps.length-1,step+n));render();},reset(){step=0;render();},current(){return data[selected];}};
+ const api={render,select(i){dir='next';selected=i;step=0;render();},advance(n){dir=n<0?'prev':'next';step=Math.max(0,Math.min(data[selected].steps.length-1,step+n));render();},reset(){dir='prev';step=0;render();},current(){return data[selected];}};
  el('scenario-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-scenario]');if(b)api.select(Number(b.dataset.scenario));});
  el('step-prev').onclick=()=>api.advance(-1);
  el('step-next').onclick=()=>api.advance(1);
@@ -81,7 +87,7 @@ const playerCur=createPlayer('cur-',scenarios,'pwdff dev console');
 const playerAi=createPlayer('ai-',aiScenarios,'AI-assisted E2E');
 
 // ---------- 검증 배경 카드 ----------
-function renderContexts(){$('#context-cards').innerHTML=[(contextIndex+2)%3,contextIndex,(contextIndex+1)%3].map(i=>{const c=contexts[i];return `<button class="context-card ${i===contextIndex?'active':''}" data-context="${i}" aria-pressed="${i===contextIndex}"><small>${c.english}</small><h3>${c.title}</h3><span class="card-image"></span><span class="card-number">${pad(i+1)}</span></button>`;}).join('');$('#context-count').textContent=`${pad(contextIndex+1)} / 03`;$('#context-description').textContent=contexts[contextIndex].description;}
+function renderContexts(){$('#context-cards').innerHTML=[(contextIndex+2)%3,contextIndex,(contextIndex+1)%3].map(i=>{const c=contexts[i];return `<button class="context-card ${i===contextIndex?'active':''}" data-context="${i}" aria-pressed="${i===contextIndex}"><small>${c.english}</small><h3>${c.title}</h3><span class="card-image"></span><span class="card-number">${pad(i+1)}</span></button>`;}).join('');$('#context-count').textContent=`${pad(contextIndex+1)} / 03`;$('#context-description').innerHTML=`<span class="swap">${escape(contexts[contextIndex].description)}</span>`;}
 $('#context-cards').onclick=e=>{const b=e.target.closest('[data-context]');if(b){contextIndex=Number(b.dataset.context);renderContexts();}};
 $('#context-prev').onclick=()=>{contextIndex=(contextIndex+2)%3;renderContexts();};
 $('#context-next').onclick=()=>{contextIndex=(contextIndex+1)%3;renderContexts();};
@@ -103,8 +109,8 @@ $('#modal').addEventListener('click',e=>{if(e.target===$('#modal')){const r=$('#
 
 // ---------- 장면 이동 ----------
 function syncChapter(){let nearest=0,min=Infinity;chapters.forEach((el,i)=>{let d=Math.abs(el.getBoundingClientRect().top-76);if(d<min){min=d;nearest=i;}});chapter=nearest;document.querySelectorAll('.header nav a').forEach((a,i)=>{a.classList.toggle('active',i===chapter);if(i===chapter)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');});$('#chapter-count').textContent=`${pad(chapter+1)} / ${pad(LAST+1)}`;$('#chapter-name').textContent=names[chapter];$('#chapter-prev').disabled=chapter===0;$('#chapter-next').disabled=chapter===LAST;}
-let scrollPending=false;window.addEventListener('scroll',()=>{if(!scrollPending){requestAnimationFrame(()=>{syncChapter();scrollPending=false;});scrollPending=true;}},{passive:true});
-function goChapter(i){chapters[Math.max(0,Math.min(LAST,i))].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
+let scrollPending=false;window.addEventListener('scroll',()=>{if(!scrollPending){requestAnimationFrame(()=>{syncChapter();motionScroll();scrollPending=false;});scrollPending=true;}},{passive:true});
+function goChapter(i){chapters[Math.max(0,Math.min(LAST,i))].scrollIntoView({behavior:REDUCED?'instant':'smooth'});}
 function setPresentation(on){presenting=on;document.body.classList.toggle('presenting',on);$('#presentation-bar').hidden=!on;$('#present').setAttribute('aria-pressed',String(on));$('#present').innerHTML=on?'발표 중 <span>✦</span>':'발표 모드 <span>↗</span>';syncChapter();if(on)toast('← → 단계 이동 · PageUp / PageDown 장면 이동 · Esc 종료');}
 $('#present').onclick=()=>setPresentation(!presenting);$('#exit-present').onclick=()=>setPresentation(false);
 $('#chapter-prev').onclick=()=>goChapter(chapter-1);$('#chapter-next').onclick=()=>goChapter(chapter+1);
@@ -112,5 +118,47 @@ function toast(message){clearTimeout(toastTimer);$('#toast').textContent=message
 $('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{toast('전체화면을 지원하지 않는 환경입니다. 발표 모드는 계속 사용할 수 있습니다.');}};
 document.addEventListener('fullscreenchange',()=>$('#fullscreen').setAttribute('aria-label',document.fullscreenElement?'전체화면 종료':'전체화면'));
 document.addEventListener('keydown',e=>{if($('#modal').open||e.target.closest('input,textarea,select,[contenteditable="true"]'))return;if(!presenting)return;if(e.key==='Escape'){setPresentation(false);return;}if(['ArrowRight','ArrowLeft','PageDown','PageUp','Home','End'].includes(e.key)){e.preventDefault();syncChapter();const fwd=e.key==='ArrowRight';if(e.key==='Home')goChapter(0);else if(e.key==='End')goChapter(LAST);else if(e.key==='PageDown')goChapter(chapter+1);else if(e.key==='PageUp')goChapter(chapter-1);else if(chapter===2)playerCur.advance(fwd?1:-1);else if(chapter===3)playerAi.advance(fwd?1:-1);else goChapter(chapter+(fwd?1:-1));}});
-const starfield=document.createElement('div');starfield.className='starfield';starfield.setAttribute('aria-hidden','true');starfield.innerHTML=Array.from({length:48},(_,i)=>`<i class="star ${i%9===0?'bright':''}" style="--x:${((i*137.508)%100).toFixed(2)}%;--y:${((i*73.913)%100).toFixed(2)}%;--delay:${-(i%13)}s;--duration:${5+i%7}s"></i>`).join('');$('.hero').prepend(starfield);
+function starfield(host,count,seed,local){
+ const f=document.createElement('div');f.className='starfield'+(local?' local':'');f.setAttribute('aria-hidden','true');
+ f.innerHTML=Array.from({length:count},(_,i)=>`<i class="star ${i%9===0?'bright':''}" style="--x:${((i*137.508+seed*29)%100).toFixed(2)}%;--y:${((i*73.913+seed*41)%100).toFixed(2)}%;--delay:${-(i%13)}s;--duration:${5+i%7}s"></i>`).join('')
+  +(local?'':Array.from({length:3},(_,i)=>`<i class="shoot" style="--x:${9+i*30}%;--y:${7+i*16}%;--delay:${-(i*7)}s"></i>`).join(''));
+ host?.prepend(f);return f;
+}
+const heroStars=starfield($('.hero'),48,0,false);
+starfield($('.journey'),26,3,true);
+starfield($('.results'),26,7,true);
 playerCur.render();playerAi.render();renderContexts();syncChapter();
+
+// ---------- 움직임 (reduced-motion이거나 DOM 모형이면 통째로 꺼집니다) ----------
+function motionScroll(){
+ if(!MOTION)return;
+ const doc=document.documentElement,y=window.scrollY||0,span=doc.scrollHeight-doc.clientHeight;
+ $('#scroll-progress').style.setProperty('--p',(span>0?Math.min(1,y/span):0).toFixed(4));
+ heroStars.style.transform=`translate3d(0,${(y*.3).toFixed(1)}px,0)`;
+ const hero=$('.hero-content');
+ hero.style.transform=`translate3d(0,${(y*.12).toFixed(1)}px,0)`;
+ hero.style.opacity=String(Math.max(0,1-y/780));
+}
+if(MOTION){
+ document.body.classList.toggle('motion',true);
+ // 화면에 들어올 때 한 번씩 올라오게 한다. 한 번 보이면 관찰을 끊는다.
+ const io=new IntersectionObserver((entries,self)=>{for(const e of entries)if(e.isIntersecting){e.target.classList.add('in');self.unobserve(e.target);}},{rootMargin:'0px 0px -6% 0px'});
+ const order=new Map();
+ document.querySelectorAll('.section-heading>*,.context-controls,.context-description,.journey-flow,.scenario-layout>*,.result-intro>*,.result-group,.result-row,.boundary,.resource-card,.closing>*').forEach(node=>{
+  const i=order.get(node.parentElement)||0;order.set(node.parentElement,i+1);
+  node.style.setProperty('--d',Math.min(i,6));node.classList.add('reveal');io.observe(node);
+ });
+ // 검증 범위의 숫자는 화면에 들어올 때 세어 올린다
+ document.querySelectorAll('.result-intro strong').forEach(node=>{
+  const goal=Number(node.textContent);if(!Number.isFinite(goal))return;
+  const counter=new IntersectionObserver(entries=>{
+   if(!entries.some(e=>e.isIntersecting))return;
+   counter.disconnect();
+   let start=0;
+   const tick=now=>{start||=now;const k=Math.min(1,(now-start)/900);node.textContent=pad(Math.round(goal*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(tick);};
+   requestAnimationFrame(tick);
+  },{threshold:.5});
+  counter.observe(node);
+ });
+ motionScroll();
+}

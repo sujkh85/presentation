@@ -41,7 +41,8 @@ http://127.0.0.1:4173 에 접속합니다. ES 모듈을 쓰므로 `index.html`�
 - 발표 모드에서 ←/→는 시나리오 내부 단계 이동입니다. **현재 E2E와 AI-assisted 두 섹션 모두** 단계 이동이 동작하며, 나머지 섹션에서는 장면 이동입니다.
 - PageUp/PageDown은 장면 이동, Home/End는 처음/마지막, Esc는 발표 모드 종료입니다.
 - 상단 ▤ 또는 발표 자료에서 약 10분 대본을 봅니다. 앞 6분이 현황, 뒤 4분이 AI입니다.
-- 상단 ⛶는 전체화면입니다. 별빛은 발표 모드와 reduced-motion에서 멈춥니다.
+- 상단 ⛶는 전체화면입니다. 별빛은 발표 모드에서도 계속 반짝이고, reduced-motion에서만 멈춥니다.
+- 단계를 넘기면 재현 화면이 진행 방향으로 들어오고, 로그·체크리스트·인증 코드가 순서대로 나타납니다. 실행 중 표시(도는 아이콘, 흐르는 빛, 커서)는 장식이며 실제 실행 상태가 아닙니다.
 
 ## 회사 저장소에서 채우기
 
@@ -53,7 +54,8 @@ http://127.0.0.1:4173 에 접속합니다. ES 모듈을 쓰므로 `index.html`�
 
 - `dist/index.html`: 여섯 발표 섹션
 - `dist/styles.css`, `dist/galaxy.css`: 레이아웃과 은하 스타일, 콘솔 재현 화면 부품
-- `dist/app.js`: 단계 플레이어 2개(`cur-` / `ai-`), 25개 재현 화면, 발표 모드, 모달
+- `dist/motion.css`: 등장·전환·재현 화면 안의 움직임. reduced-motion에서 전부 꺼집니다
+- `dist/app.js`: 단계 플레이어 2개(`cur-` / `ai-`), 25개 재현 화면, 발표 모드, 모달, 스크롤 진입·진행 막대·시차 이동
 - `dist/scenarios.js`: `scenarios`(현황) · `aiScenarios`(AI) · `contexts` · `notes`
 - `tests/presentation.test.mjs`: 브라우저가 아닌 DOM 모형으로 상태 전환 검증
 
