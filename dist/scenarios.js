@@ -43,7 +43,7 @@ export const aiScenarios = [
  checks:['확인 항목이 기획서에서 근거와 함께 도출되는가','도출한 항목을 실제로 실행하는가','어긋남을 사람이 판단할 수 있는 형태로 보고하는가'],blueprint:`// 도입 예정 — 아직 실행 결과가 없습니다\nGiven 대상 기능의 기획서가 있다\nWhen AI가 기획서에서 정상 흐름과 예외 조건을 도출한다\nThen 확인 항목이 근거 위치와 함께 생성된다\nAnd 도출한 항목을 업무망 콘솔에서 실행한다\nAnd 기대와 실제가 어긋난 지점을 보고한다\n\n// 정할 것: 기획서 반입 경로, 버전 관리, 도출 항목의 승인 절차\n// 주의: AI가 만든 기대값을 사람 검토 없이 정답으로 쓰지 않습니다`}
 ];
 export const contexts=[
- {title:'닫힌 망에서 업무망으로',english:'THE ENVIRONMENT',description:'지금은 NCP 독립망 안에서만 돌고 있습니다. 앞으로 확인하려는 곳은 업무망입니다.'},
+ {title:'닫힌 망 안에서',english:'THE ENVIRONMENT',description:'지금은 NCP 독립망 안에서만 돌고 있습니다. 앞으로 확인하려는 곳은 업무망입니다.'},
  {title:'정해진 시각에',english:'THE SCHEDULE',description:'매일 08:50에 풀 테스트, 1시간마다 로그인 테스트. 사람이 묻기 전에 먼저 확인합니다.'},
  {title:'아직 못 하는 것',english:'THE LIMIT',description:'2차 인증이 있으면 로그인하지 못하고, 눈으로 봐야 아는 문제는 넘어가며, 확인할 항목은 사람이 먼저 정해줘야 합니다.'}
 ];
