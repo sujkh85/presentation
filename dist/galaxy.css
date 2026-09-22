@@ -1,0 +1,48 @@
+/* Galaxy edition: generated nebula artwork, restrained stellar motion. */
+:root{--starlight:#c4c3ff;--ice:#bce6ff;--space:#0a0c1d}
+body{background:var(--space)}
+.header{background:#090c19ed;border-color:#afb2ff20;backdrop-filter:blur(15px)}
+.hero{background-image:url('assets/galaxy.png');background-position:center}
+.hero-shade{background:linear-gradient(90deg,#05091970,transparent 76%),linear-gradient(0deg,#090c1dd9,transparent 30%)}
+.hero-content{z-index:2}.hero-topline,.hero-bottom{z-index:3}
+.hero h1{color:#faf9ff;text-shadow:0 0 55px #8ca3ff35}
+.hero h1 em{background:linear-gradient(105deg,#fff 5%,#d5c9ff 55%,#a4daff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-content>.eyebrow:before{content:'✦';margin-right:13px;color:#e2d4ff;text-shadow:0 0 15px #bcb5ff}
+.hero .play-circle{border-color:#d6c5ff;box-shadow:0 0 25px #a8a0ff30;transition:box-shadow .3s}
+.hero-cta:hover .play-circle{box-shadow:0 0 35px #a8a0ff70}
+.starfield{position:absolute;inset:76px 0 0;z-index:1;overflow:hidden;pointer-events:none}
+.star{position:absolute;left:var(--x);top:var(--y);width:2px;height:2px;border-radius:50%;background:#e9efff;box-shadow:0 0 6px 2px #b7caff80;animation:twinkle var(--duration) ease-in-out var(--delay) infinite}
+.star.bright{width:4px;height:4px;box-shadow:0 0 12px 4px #c2bcff90}
+.star.bright:before,.star.bright:after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(90deg,transparent,#eef0ff,transparent);width:20px;height:1px}
+.star.bright:after{transform:translate(-50%,-50%) rotate(90deg)}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.65)}50%{opacity:.95;transform:scale(1.05)}}
+.journey,.results{background:linear-gradient(0deg,#0a0d21ed,#0b0e20e8),url('assets/galaxy.png') center/cover;position:relative}
+.journey:before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 52%,#6356d819,transparent 60%)}
+.eyebrow{color:#bcb6e9}.ornament{color:#a29acb;text-shadow:0 0 14px #cbb5ff65}
+.card-image{background-image:url('assets/galaxy.png');background-position:82% center}
+.context-card{background:linear-gradient(145deg,#f6f3ff,#d6e3f5);box-shadow:0 0 0 8px #b4a4ff06,0 0 0 9px #bcb2ff24}
+.context-card.active{box-shadow:0 0 0 8px #b4a4ff09,0 0 0 9px #bcb2ff45,0 20px 60px #6456d830}
+.context-card:nth-child(2) .card-image{background-position:65% 50%}.context-card:nth-child(3) .card-image{filter:hue-rotate(30deg);background-position:99% 50%}
+.context-description{position:relative}.journey-flow{position:relative}.journey-flow span:before{content:'✧';margin-right:9px;color:#c1b4ef}
+.journey-flow i{font-size:0;width:55px;height:1px;background:linear-gradient(90deg,#9a87cc40,#aca6d8)}
+.scenario{background:linear-gradient(131deg,#0d1127 0%,#0d1127 48%,#eeeff8 48.05%,#eeeff8 100%)}
+.scenario-info{background:#f0f1f9;padding:28px 30px 26px;border-radius:0 52px 0 0;box-shadow:0 0 0 1px #dce0ec50}
+.scenario-layout{gap:70px;margin-top:20px}.simulation-side{padding-top:46px}
+.scenario-info>h3{font-size:35px}.scenario-tabs{margin:19px 0}.scenario-description{min-height:0}
+.step-copy{min-height:185px}.scenario{padding-bottom:60px}
+.primary-button{background:linear-gradient(110deg,#28283f,#3b4269)}
+.simulation{box-shadow:0 25px 70px #0005,0 0 60px #848cff12;border-color:#b7bbd4}
+.concert-cover{background-image:linear-gradient(90deg,#15294570,transparent),url('assets/galaxy.png')}
+.muted-action{opacity:.55}.download-link{display:inline-block;margin-top:20px}
+.result-intro strong{color:#d3ccff}.status{border-color:#7673a4;color:#c6c2e4}
+.result-row:hover{background:#aaa2ff07}.result-row h3{color:#e4e2f5}
+.evidence{background:#eeeff8}.notes-art{background:linear-gradient(90deg,#0d143290,#49387340),url('assets/galaxy.png') center/cover}
+.prompt-art{background:linear-gradient(120deg,#dde2f5,#e4dff4);color:#56577e}
+.design-art{background:linear-gradient(90deg,#0d1432b0,#181432a0),url('assets/galaxy.png') center/cover}
+.closing>span{color:#8980b5;text-shadow:0 0 20px #b4a0df}
+footer{background:#090c1b}.presentation-bar{background:#101329f5;border-color:#78709f}.presenting .star{animation-play-state:paused;opacity:.45}
+.presenting .scenario-info>h3{font-size:38px}.presenting .step-copy{min-height:215px}
+@media(min-width:1700px){.scenario-layout{gap:105px}.scenario-info{padding:35px 42px}.scenario-info>h3{font-size:44px}.scenario .section-heading h2{font-size:36px}.scenario-description{font-size:17px}}
+@media(max-width:1100px){.scenario-layout{gap:35px}.scenario-info{padding:25px}.scenario-info>h3{font-size:29px}.scenario-description{font-size:14px}}
+@media(max-width:760px){.hero{background-position:65% center}.hero-shade{background:linear-gradient(90deg,#080d2270,#080d2220),linear-gradient(0deg,#090c1ddd,transparent 60%)}.scenario{background:#eeeff8}.scenario-info{padding:0;box-shadow:none;background:transparent}.scenario-info>h3{font-size:31px}.scenario-layout{gap:25px}.simulation-side{padding-top:0}.journey-flow{gap:9px}.journey-flow i{width:15px}.journey-flow span:before{display:none}.presenting .scenario-info>h3{font-size:31px}.presenting .step-copy{min-height:190px}.starfield{inset:68px 0 0}.step-copy{min-height:195px}.context-card.active{transform:scale(1.03)}}
+@media(prefers-reduced-motion:reduce){.star{animation:none;opacity:.55}}
